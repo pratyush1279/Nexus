@@ -72,8 +72,9 @@ function renderDashboard(data) {
   workerContainer.innerHTML = workers.map(w => {
     const isQuarantined = w.status === 'TAKEN_OUT_OF_SERVICE';
     const statusClass = isQuarantined ? 'quarantined' : (w.status === 'BUSY' ? 'busy' : 'idle');
-    const statusLabel = isQuarantined ? 'QUARANTINED' : w.status;
+    const statusLabel = isQuarantined ? 'CRASHED / QUARANTINED' : w.status;
     const activeJobText = w.active_job_id ? `Processing: <strong>${w.active_job_id}</strong>` : 'No Active Job';
+    const cappedRecovery = Math.min(w.successful_jobs_since_reset, 3);
 
     return `
       <div class="worker-card ${isQuarantined ? 'quarantined' : ''}">
@@ -83,7 +84,12 @@ function renderDashboard(data) {
             <span class="status-tag ${statusClass}">${statusLabel}</span>
           </div>
           <div class="worker-job-assignment">${activeJobText}</div>
-          <div class="worker-details">Failures: ${w.consecutive_failures}/3 | Recovery: ${w.successful_jobs_since_reset}/3</div>
+          <div class="worker-details">Failures: ${w.consecutive_failures}/3 | Recovery Progress: ${cappedRecovery}/3</div>
+          ${isQuarantined ? `
+            <div class="worker-crash-warning">
+              ⚠️ SYSTEM CRASH: Capacity (3/3 failures) reached! Click 'Reset' or '1-Click Rollback' to recover.
+            </div>
+          ` : ''}
           <div class="worker-toolbar">
             <button class="btn-xs btn-primary-xs" onclick="triggerAction('/api/worker/${w.worker_id}/enqueue')">➕ Send Work</button>
             <button class="btn-xs btn-danger-xs" onclick="triggerWorkerMode('${w.worker_id}', 'CRASH')">💥 Crash Mode</button>

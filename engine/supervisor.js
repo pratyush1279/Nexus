@@ -50,12 +50,13 @@ function recordWorkerSuccess(workerId) {
 
   if (!worker) return;
 
-  const newSuccessCount = worker.successful_jobs_since_reset + 1;
+  const rawSuccessCount = worker.successful_jobs_since_reset + 1;
+  const newSuccessCount = Math.min(rawSuccessCount, REQUIRED_SUCCESSES_FOR_RECOVERY);
   let newFailures = worker.consecutive_failures;
   let newStatus = worker.status === 'TAKEN_OUT_OF_SERVICE' ? 'TAKEN_OUT_OF_SERVICE' : 'IDLE';
 
   // EARNING RECOVERY: Only reset failure counter after settling period of 3 successful jobs!
-  if (newSuccessCount >= REQUIRED_SUCCESSES_FOR_RECOVERY && newFailures > 0) {
+  if (rawSuccessCount >= REQUIRED_SUCCESSES_FOR_RECOVERY && newFailures > 0) {
     newFailures = 0;
     newStatus = 'IDLE';
     logEvent({
