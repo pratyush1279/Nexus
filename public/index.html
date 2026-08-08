@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXUS Operator View - Internal Reliability Platform</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation Header -->
+    <header class="top-bar">
+      <div class="brand">
+        <span class="nexus-logo">⚡ NEXUS</span>
+        <span class="platform-tag">INTERNAL RELIABILITY & ORCHESTRATION PLATFORM</span>
+      </div>
+      <div class="system-status" id="system-status-indicator">
+        <span class="pulse-dot green"></span>
+        <span class="status-text">SYSTEM HEALTHY</span>
+      </div>
+    </header>
+
+    <!-- R-12: The 90-Second Human Diagnostic Header Banner -->
+    <section class="diagnostic-banner" id="diagnostic-banner">
+      <div class="banner-content">
+        <div class="banner-badge" id="banner-severity">SYSTEM NORMAL</div>
+        <div class="banner-body">
+          <h2 class="banner-title" id="banner-title">All Platform Operations Running Within Parameters</h2>
+          <p class="banner-meta" id="banner-meta">No active incidents detected. Persistent storage active, retry limits enforced.</p>
+        </div>
+      </div>
+      <div class="banner-actions" id="banner-actions">
+        <!-- Dynamic action buttons will be injected here -->
+      </div>
+    </section>
+
+    <!-- Key Metrics Grid -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">ACTIVE RELEASE</div>
+        <div class="metric-value highlight-blue" id="metric-active-release">v1.0.0</div>
+        <div class="metric-sub" id="metric-release-status">Status: ACTIVE</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">QUEUE BACKLOG</div>
+        <div class="metric-value" id="metric-queue-depth">0</div>
+        <div class="metric-sub" id="metric-oldest-age">Oldest: 0s</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">COMPLETED JOBS</div>
+        <div class="metric-value highlight-green" id="metric-completed">0</div>
+        <div class="metric-sub">Processed safely</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">QUARANTINED (DLQ)</div>
+        <div class="metric-value highlight-red" id="metric-quarantined">0</div>
+        <div class="metric-sub">Ceiling exceeded</div>
+      </div>
+    </section>
+
+    <!-- Main Workspace Layout (Two Columns) -->
+    <main class="dashboard-body">
+      <!-- Left Column: Workers & Controls -->
+      <div class="left-panel">
+        <!-- Worker Supervision Pool -->
+        <section class="panel-card">
+          <div class="panel-header">
+            <h3>👷 WORKER SUPERVISION POOL</h3>
+            <span class="badge" id="worker-count-badge">3 Workers</span>
+          </div>
+          <div class="worker-list" id="worker-list-container">
+            <!-- Dynamic worker cards -->
+          </div>
+        </section>
+
+        <!-- Interactive Control & Chaos Panel (Thing 04 Controls) -->
+        <section class="panel-card">
+          <div class="panel-header">
+            <h3>🕹️ OPERATOR CONTROLS & CHAOS PANEL</h3>
+          </div>
+          <div class="controls-grid">
+            <button class="btn btn-primary" onclick="triggerAction('/api/enqueue-job')">➕ Enqueue Job</button>
+            <button class="btn btn-secondary" onclick="triggerAction('/api/enqueue-batch')">📦 Enqueue Batch (5 Jobs)</button>
+            <button class="btn btn-warning" onclick="triggerAction('/api/chaos/duplicate')">🔄 Test Idempotency (Duplicate)</button>
+            <button class="btn btn-danger" onclick="triggerAction('/api/chaos/poison-pill')">💣 Poison Pill (Crash Loop)</button>
+            <button class="btn btn-purple" onclick="triggerAction('/api/chaos/bad-release')">🚀 Deploy Broken Release (v1.2.0)</button>
+            <button class="btn btn-rollback" onclick="triggerAction('/api/release/rollback')">↩️ 1-Click Rollback to Baseline</button>
+            <button class="btn btn-outline" onclick="triggerAction('/api/chaos/reset-workers')">🔧 Reset Quarantined Workers</button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Right Column: Audit Event Timeline (R-05 & R-07) -->
+      <div class="right-panel">
+        <section class="panel-card timeline-card">
+          <div class="panel-header">
+            <h3>📜 CHRONOLOGICAL AUDIT TIMELINE (R-05)</h3>
+            <span class="sub-text">Linked to Releases & Worker Actions</span>
+          </div>
+          <div class="timeline-container" id="timeline-container">
+            <!-- Dynamic timeline items -->
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
