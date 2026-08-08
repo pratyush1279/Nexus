@@ -236,6 +236,7 @@ body {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--border-color);
   border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
 .worker-card.quarantined {
@@ -246,17 +247,37 @@ body {
 .worker-info {
   display: flex;
   flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.worker-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .worker-name {
-  font-weight: 600;
+  font-weight: 700;
   font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.worker-job-assignment {
+  font-size: 0.8rem;
+  color: var(--accent-blue);
+  font-family: var(--font-mono);
 }
 
 .worker-details {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.78rem;
 }
 
 .status-tag {

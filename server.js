@@ -136,12 +136,19 @@ app.post('/api/chaos/backlog-spike', (req, res) => {
   res.json({ success: true, count, message: `Enqueued ${count} tasks into queue.` });
 });
 
-// 5. Reset Workers
+// 5. Reset Workers (All or Individual)
 app.post('/api/chaos/reset-workers', (req, res) => {
   const workers = getAllWorkers();
   workers.forEach(w => resetWorkerStatus(w.worker_id));
   setWorkerPoolMode('NORMAL');
   res.json({ success: true, message: 'All workers reset back to active IDLE state.' });
+});
+
+app.post('/api/worker/reset/:workerId', (req, res) => {
+  const { workerId } = req.params;
+  resetWorkerStatus(workerId);
+  setWorkerPoolMode('NORMAL');
+  res.json({ success: true, message: `Worker ${workerId} reset to IDLE.` });
 });
 
 app.listen(PORT, () => {

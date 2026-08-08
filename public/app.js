@@ -65,22 +65,31 @@ function renderDashboard(data) {
   document.getElementById('metric-completed').textContent = stats.completed;
   document.getElementById('metric-quarantined').textContent = stats.quarantined;
 
-  // 4. Workers Pool
+  // 4. Workers Pool (3 Workers: worker-1, worker-2, worker-3)
   const workerContainer = document.getElementById('worker-list-container');
-  document.getElementById('worker-count-badge').textContent = `${workers.length} Workers`;
+  document.getElementById('worker-count-badge').textContent = `${workers.length} Active Workers`;
 
   workerContainer.innerHTML = workers.map(w => {
     const isQuarantined = w.status === 'TAKEN_OUT_OF_SERVICE';
     const statusClass = isQuarantined ? 'quarantined' : (w.status === 'BUSY' ? 'busy' : 'idle');
     const statusLabel = isQuarantined ? 'QUARANTINED' : w.status;
+    const activeJobText = w.active_job_id ? `Processing: <strong>${w.active_job_id}</strong>` : 'No Active Job';
 
     return `
       <div class="worker-card ${isQuarantined ? 'quarantined' : ''}">
         <div class="worker-info">
-          <span class="worker-name">${w.worker_id}</span>
-          <span class="worker-details">Failures: ${w.consecutive_failures}/3 | Recoveries: ${w.successful_jobs_since_reset}/3</span>
+          <div class="worker-title-row">
+            <span class="worker-name">⚙️ ${w.worker_id}</span>
+            <span class="status-tag ${statusClass}">${statusLabel}</span>
+          </div>
+          <div class="worker-job-assignment">${activeJobText}</div>
+          <div class="worker-details">Failures: ${w.consecutive_failures}/3 | Recovery Progress: ${w.successful_jobs_since_reset}/3</div>
         </div>
-        <span class="status-tag ${statusClass}">${statusLabel}</span>
+        ${isQuarantined ? `
+          <button class="btn btn-sm btn-outline" onclick="triggerAction('/api/worker/reset/${w.worker_id}')">
+            🔧 Reset ${w.worker_id}
+          </button>
+        ` : ''}
       </div>
     `;
   }).join('');
