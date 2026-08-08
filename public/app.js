@@ -83,13 +83,14 @@ function renderDashboard(data) {
             <span class="status-tag ${statusClass}">${statusLabel}</span>
           </div>
           <div class="worker-job-assignment">${activeJobText}</div>
-          <div class="worker-details">Failures: ${w.consecutive_failures}/3 | Recovery Progress: ${w.successful_jobs_since_reset}/3</div>
+          <div class="worker-details">Failures: ${w.consecutive_failures}/3 | Recovery: ${w.successful_jobs_since_reset}/3</div>
+          <div class="worker-toolbar">
+            <button class="btn-xs btn-primary-xs" onclick="triggerAction('/api/worker/${w.worker_id}/enqueue')">➕ Send Work</button>
+            <button class="btn-xs btn-danger-xs" onclick="triggerWorkerMode('${w.worker_id}', 'CRASH')">💥 Crash Mode</button>
+            <button class="btn-xs btn-warning-xs" onclick="triggerWorkerMode('${w.worker_id}', 'SLOW')">⏱️ Slow Mode</button>
+            <button class="btn-xs btn-outline-xs" onclick="triggerAction('/api/worker/reset/${w.worker_id}')">🔧 Reset</button>
+          </div>
         </div>
-        ${isQuarantined ? `
-          <button class="btn btn-sm btn-outline" onclick="triggerAction('/api/worker/reset/${w.worker_id}')">
-            🔧 Reset ${w.worker_id}
-          </button>
-        ` : ''}
       </div>
     `;
   }).join('');
@@ -155,6 +156,22 @@ async function triggerAction(endpoint) {
     fetchTelemetry();
   } catch (err) {
     console.warn('Action attempt error:', err.message);
+    fetchTelemetry();
+  }
+}
+
+async function triggerWorkerMode(workerId, mode) {
+  try {
+    const res = await fetch(`/api/worker/${workerId}/mode`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode })
+    });
+    const data = await res.json();
+    console.log('Worker mode change:', data);
+    fetchTelemetry();
+  } catch (err) {
+    console.warn('Worker mode change error:', err);
     fetchTelemetry();
   }
 }

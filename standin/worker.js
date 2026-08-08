@@ -81,12 +81,13 @@ function startWorkerPool() {
   workerPool.forEach(w => w.start());
 }
 
-function setWorkerPoolMode(mode) {
-  workerPool.forEach(w => w.setMode(mode));
-}
-
-function getWorkerPool() {
-  return workerPool;
+function setSpecificWorkerMode(workerId, mode) {
+  const target = workerPool.find(w => w.workerId === workerId);
+  if (target) {
+    target.setMode(mode);
+    return true;
+  }
+  return false;
 }
 
 module.exports = {
@@ -94,5 +95,6 @@ module.exports = {
   workerPool,
   startWorkerPool,
   setWorkerPoolMode,
+  setSpecificWorkerMode,
   getWorkerPool
 };

@@ -285,6 +285,34 @@ body {
   color: var(--text-muted);
 }
 
+.worker-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.btn-xs {
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-xs:active { transform: scale(0.96); }
+.btn-xs:hover { opacity: 0.9; }
+
+.btn-primary-xs { background: #0284c7; color: #fff; }
+.btn-danger-xs { background: #dc2626; color: #fff; }
+.btn-warning-xs { background: #d97706; color: #fff; }
+.btn-outline-xs { background: #ffffff; border: 1px solid #cbd5e1; color: var(--text-main); }
+
 .btn-sm {
   padding: 6px 12px;
   font-size: 0.78rem;

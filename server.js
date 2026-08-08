@@ -7,7 +7,7 @@ const { getAllWorkers, resetWorkerStatus } = require('./engine/supervisor');
 const { getActiveRelease, getAllReleases, deployRelease, rollbackRelease } = require('./engine/releaseManager');
 const { getTimeline, logEvent } = require('./engine/auditLogger');
 const { produceSampleJob, produceBatch } = require('./standin/producer');
-const { startWorkerPool, getWorkerPool, setWorkerPoolMode } = require('./standin/worker');
+const { startWorkerPool, getWorkerPool, setWorkerPoolMode, setSpecificWorkerMode } = require('./standin/worker');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -147,8 +147,24 @@ app.post('/api/chaos/reset-workers', (req, res) => {
 app.post('/api/worker/reset/:workerId', (req, res) => {
   const { workerId } = req.params;
   resetWorkerStatus(workerId);
-  setWorkerPoolMode('NORMAL');
+  setSpecificWorkerMode(workerId, 'NORMAL');
   res.json({ success: true, message: `Worker ${workerId} reset to IDLE.` });
+});
+
+app.post('/api/worker/:workerId/mode', (req, res) => {
+  const { workerId } = req.params;
+  const { mode } = req.body;
+  const validModes = ['NORMAL', 'SLOW', 'CRASH'];
+  const targetMode = validModes.includes(mode) ? mode : 'CRASH';
+
+  setSpecificWorkerMode(workerId, targetMode);
+  res.json({ success: true, workerId, mode: targetMode, message: `Worker ${workerId} mode set to ${targetMode}.` });
+});
+
+app.post('/api/worker/:workerId/enqueue', (req, res) => {
+  const { workerId } = req.params;
+  const result = produceSampleJob(`job-${workerId}-${Date.now()}`, { targetWorker: workerId, created_by: 'operator_ui' });
+  res.json({ success: true, workerId, result });
 });
 
 app.listen(PORT, () => {
