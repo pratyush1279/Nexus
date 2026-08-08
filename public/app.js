@@ -143,11 +143,19 @@ function renderOfflineStatus() {
 async function triggerAction(endpoint) {
   try {
     const res = await fetch(endpoint, { method: 'POST' });
+    if (!res.ok) {
+      // Fallback for older server processes: if per-worker endpoint is 404, fallback to reset-workers
+      if (res.status === 404 && endpoint.startsWith('/api/worker/reset/')) {
+        return triggerAction('/api/chaos/reset-workers');
+      }
+      throw new Error(`Server returned status ${res.status}`);
+    }
     const data = await res.json();
     console.log('Action result:', data);
     fetchTelemetry();
   } catch (err) {
-    alert('Action failed: ' + err.message);
+    console.warn('Action attempt error:', err.message);
+    fetchTelemetry();
   }
 }
 
