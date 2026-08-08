@@ -81,6 +81,10 @@ function startWorkerPool() {
   workerPool.forEach(w => w.start());
 }
 
+function setWorkerPoolMode(mode) {
+  workerPool.forEach(w => w.setMode(mode));
+}
+
 function setSpecificWorkerMode(workerId, mode) {
   const target = workerPool.find(w => w.workerId === workerId);
   if (target) {
@@ -88,6 +92,10 @@ function setSpecificWorkerMode(workerId, mode) {
     return true;
   }
   return false;
+}
+
+function getWorkerPool() {
+  return workerPool;
 }
 
 module.exports = {
