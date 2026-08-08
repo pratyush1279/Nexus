@@ -24,7 +24,12 @@ startWorkerPool();
 app.get('/api/telemetry', (req, res) => {
   const activeRelease = getActiveRelease();
   const stats = getJobStats();
-  const workers = getAllWorkers();
+  const pool = getWorkerPool();
+  const dbWorkers = getAllWorkers();
+  const workers = dbWorkers.map(w => {
+    const p = pool.find(pw => pw.workerId === w.worker_id);
+    return { ...w, mode: p ? p.mode : 'NORMAL' };
+  });
   const timeline = getTimeline(50);
 
   // Evaluate incident status for R-12 (90-Second Human Diagnostic Headline)
@@ -158,7 +163,15 @@ app.post('/api/worker/:workerId/mode', (req, res) => {
   const targetMode = validModes.includes(mode) ? mode : 'CRASH';
 
   setSpecificWorkerMode(workerId, targetMode);
-  res.json({ success: true, workerId, mode: targetMode, message: `Worker ${workerId} mode set to ${targetMode}.` });
+
+  // Automatically enqueue a test job for this worker to demonstrate CRASH or SLOW behavior immediately!
+  if (targetMode === 'CRASH') {
+    produceSampleJob(`job-crash-${workerId}-${Date.now()}`, { targetWorker: workerId, type: 'POISON_PILL_CRASH' });
+  } else if (targetMode === 'SLOW') {
+    produceSampleJob(`job-slow-${workerId}-${Date.now()}`, { targetWorker: workerId, type: 'SLOW_LATENCY_JOB' });
+  }
+
+  res.json({ success: true, workerId, mode: targetMode, message: `Worker ${workerId} mode set to ${targetMode} and test job enqueued.` });
 });
 
 app.post('/api/worker/:workerId/enqueue', (req, res) => {

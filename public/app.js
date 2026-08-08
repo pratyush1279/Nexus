@@ -75,6 +75,8 @@ function renderDashboard(data) {
     const statusLabel = isQuarantined ? 'CRASHED / QUARANTINED' : w.status;
     const activeJobText = w.active_job_id ? `Processing: <strong>${w.active_job_id}</strong>` : 'No Active Job';
     const cappedRecovery = Math.min(w.successful_jobs_since_reset, 3);
+    const modeClass = (w.mode === 'CRASH') ? 'mode-crash' : ((w.mode === 'SLOW') ? 'mode-slow' : 'mode-normal');
+    const modeLabel = `Mode: ${w.mode || 'NORMAL'}`;
 
     return `
       <div class="worker-card ${isQuarantined ? 'quarantined' : ''}">
@@ -82,6 +84,7 @@ function renderDashboard(data) {
           <div class="worker-title-row">
             <span class="worker-name">⚙️ ${w.worker_id}</span>
             <span class="status-tag ${statusClass}">${statusLabel}</span>
+            <span class="mode-tag ${modeClass}">${modeLabel}</span>
           </div>
           <div class="worker-job-assignment">${activeJobText}</div>
           <div class="worker-details">Failures: ${w.consecutive_failures}/3 | Recovery Progress: ${cappedRecovery}/3</div>

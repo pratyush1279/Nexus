@@ -340,6 +340,18 @@ body {
 .status-tag.busy { background: #e0f2fe; color: #0369a1; }
 .status-tag.quarantined { background: #fee2e2; color: #b91c1c; }
 
+.mode-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+}
+
+.mode-tag.mode-normal { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+.mode-tag.mode-crash { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+.mode-tag.mode-slow { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
+
 /* Controls Grid */
 .controls-grid {
   display: grid;
